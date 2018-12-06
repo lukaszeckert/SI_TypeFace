@@ -1,0 +1,335 @@
+package com.sample
+ 
+import com.sample.DroolsTest.Message;
+import javax.swing.*;
+
+rule "Hello World"
+    when
+        m : Message( status == Message.HELLO, myMessage : message )
+    then
+        System.out.println( myMessage );
+        m.setMessage( "Goodbye cruel world" );
+        m.setStatus( Message.GOODBYE );
+        update( m );
+end
+
+rule "GoodBye"
+    when
+        Message( status == Message.GOODBYE, myMessage : message )
+    then
+        System.out.println( myMessage );
+end
+
+rule "Int"
+	when
+	then
+		insert(new QuestionAnswer(new Question("",null,null),new QuestionOption("")));
+end
+
+
+
+rule "Question Name"
+	when 
+		QuestionAnswer(question.question == "czy ala ma kota", answer.option == "ala")
+	then 
+		insert(new Question("czy ala ma kota",new QuestionOption("tak"),new QuestionOption("nie")));
+end  
+           
+
+rule "Question Why you need typeface?"
+    when 
+        QuestionAnswer(question.question == "", answer.option == "")
+    then 
+        insert(new Question("Why you need typeface?",new QuestionOption("Logo"),new QuestionOption("Infographic")));
+end  
+
+
+
+rule "Question We all like something very condensed, YES?"
+    when 
+        QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Infographic")
+    then 
+        insert(new Question("We all like something very condensed, YES?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Perfect typeface Univers"
+    when 
+        QuestionAnswer(question.question == "We all like something very condensed, YES?", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Univers",null,null));
+end  
+            
+    
+
+rule "Question GOT A LOT OF TABLES, HAVE YOU?"
+    when 
+        QuestionAnswer(question.question == "We all like something very condensed, YES?", answer.option == "NO")
+    then 
+        insert(new Question("GOT A LOT OF TABLES, HAVE YOU?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Perfect typeface Letter Gothic"
+    when 
+        QuestionAnswer(question.question == "GOT A LOT OF TABLES, HAVE YOU?", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Letter Gothic",null,null));
+end  
+            
+    
+
+rule "Question YOU CIRED WHEN WATICHING TERMINATOR"
+    when 
+        QuestionAnswer(question.question == "GOT A LOT OF TABLES, HAVE YOU?", answer.option == "NO")
+    then 
+        insert(new Question("YOU CIRED WHEN WATICHING TERMINATOR",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Perfect typeface OCR"
+    when 
+        QuestionAnswer(question.question == "YOU CIRED WHEN WATICHING TERMINATOR", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is OCR",null,null));
+end  
+            
+    
+
+rule "Question I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT"
+    when 
+        QuestionAnswer(question.question == "YOU CIRED WHEN WATICHING TERMINATOR", answer.option == "NO")
+    then 
+        insert(new Question("I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT",new QuestionOption("YES"),new QuestionOption("")));
+end  
+
+
+
+rule "Perfect typeface FF DIN"
+    when 
+        QuestionAnswer(question.question == "I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is FF DIN",null,null));
+end  
+            
+    
+
+rule "Question "
+    when 
+        QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Logo")
+    then 
+        insert(new Question("",new QuestionOption("A SANS SERIF MAYBE?"),new QuestionOption("OR PERHAPS A SERIF?")));
+end  
+
+
+
+rule "Question YOU LIKE GEOMETRICS?"
+    when 
+        QuestionAnswer(question.question == "", answer.option == "A SANS SERIF MAYBE")
+    then 
+        insert(new Question("YOU LIKE GEOMETRICS?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Question DO YOU LIKE FUTURA?"
+    when 
+        QuestionAnswer(question.question == "YOU LIKE GEOMETRICS?", answer.option == "YES")
+    then 
+        insert(new Question("DO YOU LIKE FUTURA?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Perfect typeface Futura"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Futura",null,null));
+end  
+            
+    
+
+rule "Perfect typeface Metro"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "NO")
+    then 
+        insert(new Question("Perfect typeface for you is Metro",null,null));
+end  
+            
+    
+
+rule "Question A NEO-GROTESK PERHAPS?"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "NO")
+    then 
+        insert(new Question("A NEO-GROTESK PERHAPS?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Question SOMETHING HUMANISTIC, THEN?"
+    when 
+        QuestionAnswer(question.question == "A NEO-GROTESK PERHAPS?", answer.option == "NO")
+    then 
+        insert(new Question("SOMETHING HUMANISTIC, THEN?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Question DO YOU LIKE THE LOOK OF ADOBE?"
+    when 
+        QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "YES")
+    then 
+        insert(new Question("DO YOU LIKE THE LOOK OF ADOBE?",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Perfect typeface Myridad"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE THE LOOK OF ADOBE?", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Myridad",null,null));
+end  
+            
+    
+
+rule "Perfect typeface Frutiger"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE THE LOOK OF ADOBE?", answer.option == "NO")
+    then 
+        insert(new Question("Perfect typeface for you is Frutiger",null,null));
+end  
+            
+    
+
+rule "Question HOW ABOUT SOMETINH CLASSIC"
+    when 
+        QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "NO")
+    then 
+        insert(new Question("HOW ABOUT SOMETINH CLASSIC",new QuestionOption("YES"),new QuestionOption("NO")));
+end  
+
+
+
+rule "Perfect typeface Akzidenz Grotesk"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Akzidenz Grotesk",null,null));
+end  
+            
+    
+
+rule "Question THEN WE ONLY HAVE SOMETHING DECORATIVE"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "NO")
+    then 
+        insert(new Question("THEN WE ONLY HAVE SOMETHING DECORATIVE",new QuestionOption("OK"),new QuestionOption("")));
+end  
+
+
+
+rule "Perfect typeface Peignot"
+    when 
+        QuestionAnswer(question.question == "THEN WE ONLY HAVE SOMETHING DECORATIVE", answer.option == "OK")
+    then 
+        insert(new Question("Perfect typeface for you is Peignot",null,null));
+end  
+            
+    
+
+rule "Question IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\""
+    when 
+        QuestionAnswer(question.question == "A NEO-GROTESK PERHAPS?", answer.option == "YES")
+    then 
+        insert(new Question("IF I SAY "SCIENCE FICTION MOVIES ARE MY FAVOURITE"",new QuestionOption("GOOD"),new QuestionOption("BAD")));
+end  
+
+
+
+rule "Perfect typeface Eurostile"
+    when 
+        QuestionAnswer(question.question == "IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"", answer.option == "GOOD")
+    then 
+        insert(new Question("Perfect typeface for you is Eurostile",null,null));
+end  
+            
+    
+
+rule "Perfect typeface Helvetica"
+    when 
+        QuestionAnswer(question.question == "IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"", answer.option == "BAD")
+    then 
+        insert(new Question("Perfect typeface for you is Helvetica",null,null));
+end  
+            
+    
+
+//--------------------------------------------------------------------------------------------
+rule "Ask question0"
+	when
+		q: Question(option1 == null, option2 == null)
+	then
+		System.out.println(q.getQuestion());
+		
+		Object[] options = { "Ok"};
+        JFrame frame = new JFrame("DialogDemo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+        insert( new QuestionAnswer(q,q.getOption1()));
+end
+
+
+rule "Ask question1"
+	when
+		q: Question(option1 != null, option2 == null)
+	then
+		System.out.println(q.getQuestion());
+		
+		Object[] options = { q.getOption1().getOption() };
+        JFrame frame = new JFrame("DialogDemo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+        insert( new QuestionAnswer(q,q.getOption1()));
+end
+
+
+rule "Ask question2"
+	when
+		q: Question(option1 != null, option2 != null)
+	then
+		System.out.println(q.getQuestion());
+		
+		Object[] options = { q.getOption1().getOption(), q.getOption2().getOption()};
+        JFrame frame = new JFrame("DialogDemo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
+                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+                null, options, options[0]);
+                
+        insert( new QuestionAnswer(q,new QuestionOption((String)options[n])));
+end
+
+declare Question
+ 	question : String 
+	option1 : QuestionOption
+	option2 : QuestionOption
+end
+
+declare QuestionOption
+	option : String
+end
+
+declare QuestionAnswer
+	question : Question
+	answer : QuestionOption
+end

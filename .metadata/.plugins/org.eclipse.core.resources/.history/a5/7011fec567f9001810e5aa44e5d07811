@@ -1,0 +1,54 @@
+package com.sample
+ 
+import com.sample.DroolsTest.Message;
+ 
+rule "Hello World"
+    when
+        m : Message( status == Message.HELLO, myMessage : message )
+    then
+        System.out.println( myMessage );
+        m.setMessage( "Goodbye cruel world" );
+        m.setStatus( Message.GOODBYE );
+        update( m );
+end
+
+rule "GoodBye"
+    when
+        Message( status == Message.GOODBYE, myMessage : message )
+    then
+        System.out.println( myMessage );
+end
+
+rule "Int"
+	when
+	then
+		insert(new QuestionAnswer(new Question("czy ala ma kota",null,null),new QuestionOption('ala')));
+end
+rule "Question Name"
+	when 
+		QuestionAnswer(question.question == "czy ala ma kota", answer.option == "ala")
+	then 
+		System.out.println("weala");
+		insert(new QuestionAnswer(new Question("null",null,null), null));
+end  
+
+rule "Ask question"
+	when
+		q: QuestionAnswer(answer == null)
+	then
+		//System.out.println(q.question.question);
+end
+declare Question
+ 	question : String 
+	option1 : QuestionOption
+	option2 : QuestionOption
+end
+
+declare QuestionOption
+	option : String
+end
+
+declare QuestionAnswer
+	question : Question
+	answer : QuestionOption
+end

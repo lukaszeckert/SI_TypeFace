@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Implementation-Title: KIE :: Internal
+Implementation-Version: 7.3.0.Final
+Java-Version: 1.8.0_131
+Built-By: jenkins
+Scm-Connection: scm:git:https://github.com/kiegroup/droolsjbpm-knowled
+ ge.git/kie-internal
+Specification-Vendor: JBoss by Red Hat
+Os-Arch: amd64
+Specification-Title: KIE :: Internal
+Implementation-Vendor-Id: org.kie
+Java-Vendor: Oracle Corporation
+Os-Name: Linux
+Scm-Url: https://github.com/kiegroup/droolsjbpm-knowledge/kie-internal
+Implementation-Vendor: JBoss by Red Hat
+Os-Version: 3.10.0-514.el7.x86_64
+Scm-Revision: 474290c7081703887876674803ef2ae8fb535f1d
+Created-By: Apache Maven 3.3.9
+Build-Jdk: 1.8.0_131
+Specification-Version: 7.3.0.Final
+Implementation-URL: http://www.kiegroup.org/kie-api-parent/kie-interna
+ l
+
