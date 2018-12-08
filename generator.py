@@ -1,6 +1,8 @@
 import sys
 
 file_beginning = """
+
+
 package com.sample
  
 import javax.swing.*;
@@ -10,6 +12,7 @@ declare Question
  	question : String 
 	option1 : QuestionOption
 	option2 : QuestionOption
+	option3 : QuestionOption
 end
 
 declare QuestionOption
@@ -22,53 +25,54 @@ declare QuestionAnswer
 end
 
 //declaration of Gui helper functions
-
-rule "Ask question0"
-	when
-		q: Question(option1 == null, option2 == null)
+rule "Ask question"
+	when 
+		q: Question()
 	then
 		System.out.println(q.getQuestion());
 		
-		Object[] options = { "Ok","A","B"};
-        JFrame frame = new JFrame("DialogDemo");
+		QuestionOption[] o;
+		o = new QuestionOption[3];
+		o[0] = q.getOption1();
+		o[1] = q.getOption2();
+		o[2] = q.getOption3();
+		
+		//Some options may by null
+		int num_options = 2;
+		for(;num_options>=0;num_options--)
+		{
+			if(o[num_options] !=null && o[num_options].getOption() != "")
+				break;
+		}
+		num_options++;
+		if(num_options == 0)
+		{
+			//Special case. Lets create dummy QuestionOption with OK text
+			o[0] = new QuestionOption("OK");
+			num_options = 1;
+		}
+		
+		Object[] string_options = new Object[num_options];
+		for(int i=0;i<num_options;++i)
+			string_options[i] = (Object)o[i].getOption();
+		
+		 JFrame frame = new JFrame("DialogDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-        insert( new QuestionAnswer(q,q.getOption1()));
+                null, string_options, string_options[0]);
+        if(n!=-1)
+        	insert( new QuestionAnswer(q,o[n]));
+		else update(q);
 end
 
 
-rule "Ask question1"
+//init statement 
+//TODO move this to gui
+rule "Init"
 	when
-		q: Question(option1 != null, option2 == null)
 	then
-		System.out.println(q.getQuestion());
-		
-		Object[] options = { q.getOption1().getOption() };
-        JFrame frame = new JFrame("DialogDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-        insert( new QuestionAnswer(q,q.getOption1()));
-end
-
-
-rule "Ask question2"
-	when
-		q: Question(option1 != null, option2 != null)
-	then
-		System.out.println(q.getQuestion());
-		
-		Object[] options = { q.getOption1().getOption(), q.getOption2().getOption()};
-        JFrame frame = new JFrame("DialogDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-                
-        insert( new QuestionAnswer(q,new QuestionOption((String)options[n])));
+		insert(new QuestionAnswer(new Question("",null,null,null),new QuestionOption("")));
 end
 
 //decision rules
@@ -78,18 +82,18 @@ class Question:
     rule_format = """
 rule "Question {0}"
     when 
-        QuestionAnswer(question.question == "{3}", answer.option == "{4}")
+        QuestionAnswer(question.question == "{4}", answer.option == "{5}")
     then 
-        insert(new Question("{0}",new QuestionOption("{1}"),new QuestionOption("{2}")));
+        insert(new Question("{0}",new QuestionOption("{1}"),new QuestionOption("{2}"),new QuestionOption("{3}")));
 end  
 
 """
     rule_node = """
 rule "Perfect typeface {0}"
     when 
-        QuestionAnswer(question.question == "{3}", answer.option == "{4}")
+        QuestionAnswer(question.question == "{4}", answer.option == "{5}")
     then 
-        insert(new Question("Perfect typeface for you is {0}",null,null));
+        insert(new Question("Perfect typeface for you is {0}",null,null,null));
 end  
             
     """
@@ -102,10 +106,10 @@ end
 
     def generate_rule(self):
         if self.answers[0] != "NODE":
-            self.rule = self.rule_format.format(self.question, self.answers[0], self.answers[1], self.prev_que,
+            self.rule = self.rule_format.format(self.question, self.answers[0], self.answers[1],self.answers[2], self.prev_que,
                                                 self.prev_ans)
         else:
-            self.rule = self.rule_node.format(self.question, self.answers[0], self.answers[1], self.prev_que,
+            self.rule = self.rule_node.format(self.question, self.answers[0], self.answers[1], self.answers[2], self.prev_que,
                                               self.prev_ans)
 
 
@@ -119,12 +123,13 @@ questions = []
 for i in content:
     q = Question()
     q.answers = []
+
     q.question = i[0].replace("\"", "\\\"")
     j = 0
     for option in i[1].split(','):
         j += 1
         q.answers.append(option)
-    for l in range(j, 2):
+    for l in range(j, 3):
         q.answers.append("")
 
     q.prev_que = i[2]
@@ -134,6 +139,7 @@ for i in content:
 
     q.generate_rule()
     questions.append(q)
+
 res = file_beginning
 for q in questions:
     res += q.rule

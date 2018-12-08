@@ -1,4 +1,6 @@
 
+
+
 package com.sample
  
 import javax.swing.*;
@@ -8,6 +10,7 @@ declare Question
  	question : String 
 	option1 : QuestionOption
 	option2 : QuestionOption
+	option3 : QuestionOption
 end
 
 declare QuestionOption
@@ -20,53 +23,54 @@ declare QuestionAnswer
 end
 
 //declaration of Gui helper functions
-
-rule "Ask question0"
-	when
-		q: Question(option1 == null, option2 == null)
+rule "Ask question"
+	when 
+		q: Question()
 	then
 		System.out.println(q.getQuestion());
 		
-		Object[] options = { "Ok","A","B"};
-        JFrame frame = new JFrame("DialogDemo");
+		QuestionOption[] o;
+		o = new QuestionOption[3];
+		o[0] = q.getOption1();
+		o[1] = q.getOption2();
+		o[2] = q.getOption3();
+		
+		//Some options may by null
+		int num_options = 2;
+		for(;num_options>=0;num_options--)
+		{
+			if(o[num_options] !=null && o[num_options].getOption() != "")
+				break;
+		}
+		num_options++;
+		if(num_options == 0)
+		{
+			//Special case. Lets create dummy QuestionOption with OK text
+			o[0] = new QuestionOption("OK");
+			num_options = 1;
+		}
+		
+		Object[] string_options = new Object[num_options];
+		for(int i=0;i<num_options;++i)
+			string_options[i] = (Object)o[i].getOption();
+		
+		 JFrame frame = new JFrame("DialogDemo");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
                 JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-        insert( new QuestionAnswer(q,q.getOption1()));
+                null, string_options, string_options[0]);
+        if(n!=-1)
+        	insert( new QuestionAnswer(q,o[n]));
+		else update(q);
 end
 
 
-rule "Ask question1"
+//init statement 
+//TODO move this to gui
+rule "Init"
 	when
-		q: Question(option1 != null, option2 == null)
 	then
-		System.out.println(q.getQuestion());
-		
-		Object[] options = { q.getOption1().getOption() };
-        JFrame frame = new JFrame("DialogDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-        insert( new QuestionAnswer(q,q.getOption1()));
-end
-
-
-rule "Ask question2"
-	when
-		q: Question(option1 != null, option2 != null)
-	then
-		System.out.println(q.getQuestion());
-		
-		Object[] options = { q.getOption1().getOption(), q.getOption2().getOption()};
-        JFrame frame = new JFrame("DialogDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, options, options[0]);
-                
-        insert( new QuestionAnswer(q,new QuestionOption((String)options[n])));
+		insert(new QuestionAnswer(new Question("",null,null,null),new QuestionOption("")));
 end
 
 //decision rules
@@ -75,7 +79,7 @@ rule "Question Why you need typeface?"
     when 
         QuestionAnswer(question.question == "", answer.option == "")
     then 
-        insert(new Question("Why you need typeface?",new QuestionOption("Logo"),new QuestionOption("Infographic")));
+        insert(new Question("Why you need typeface?",new QuestionOption("Logo"),new QuestionOption("Infographic"),new QuestionOption("Invitation")));
 end  
 
 
@@ -83,7 +87,7 @@ rule "Question We all like something very condensed, YES?"
     when 
         QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Infographic")
     then 
-        insert(new Question("We all like something very condensed, YES?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("We all like something very condensed, YES?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -91,7 +95,7 @@ rule "Perfect typeface Univers"
     when 
         QuestionAnswer(question.question == "We all like something very condensed, YES?", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Univers",null,null));
+        insert(new Question("Perfect typeface for you is Univers",null,null,null));
 end  
             
     
@@ -99,7 +103,7 @@ rule "Question GOT A LOT OF TABLES, HAVE YOU?"
     when 
         QuestionAnswer(question.question == "We all like something very condensed, YES?", answer.option == "NO")
     then 
-        insert(new Question("GOT A LOT OF TABLES, HAVE YOU?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("GOT A LOT OF TABLES, HAVE YOU?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -107,7 +111,7 @@ rule "Perfect typeface Letter Gothic"
     when 
         QuestionAnswer(question.question == "GOT A LOT OF TABLES, HAVE YOU?", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Letter Gothic",null,null));
+        insert(new Question("Perfect typeface for you is Letter Gothic",null,null,null));
 end  
             
     
@@ -115,7 +119,7 @@ rule "Question YOU CIRED WHEN WATICHING TERMINATOR"
     when 
         QuestionAnswer(question.question == "GOT A LOT OF TABLES, HAVE YOU?", answer.option == "NO")
     then 
-        insert(new Question("YOU CIRED WHEN WATICHING TERMINATOR",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("YOU CIRED WHEN WATICHING TERMINATOR",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -123,7 +127,7 @@ rule "Perfect typeface OCR"
     when 
         QuestionAnswer(question.question == "YOU CIRED WHEN WATICHING TERMINATOR", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is OCR",null,null));
+        insert(new Question("Perfect typeface for you is OCR",null,null,null));
 end  
             
     
@@ -131,7 +135,7 @@ rule "Question I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT"
     when 
         QuestionAnswer(question.question == "YOU CIRED WHEN WATICHING TERMINATOR", answer.option == "NO")
     then 
-        insert(new Question("I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT",new QuestionOption("YES"),new QuestionOption("")));
+        insert(new Question("I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT",new QuestionOption("YES"),new QuestionOption(""),new QuestionOption("")));
 end  
 
 
@@ -139,7 +143,7 @@ rule "Perfect typeface FF DIN"
     when 
         QuestionAnswer(question.question == "I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is FF DIN",null,null));
+        insert(new Question("Perfect typeface for you is FF DIN",null,null,null));
 end  
             
     
@@ -147,7 +151,7 @@ rule "Question "
     when 
         QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Logo")
     then 
-        insert(new Question("",new QuestionOption("A SANS SERIF MAYBE?"),new QuestionOption("OR PERHAPS A SERIF?")));
+        insert(new Question("",new QuestionOption("A SANS SERIF MAYBE?"),new QuestionOption("OR PERHAPS A SERIF?"),new QuestionOption("")));
 end  
 
 
@@ -155,7 +159,7 @@ rule "Question YOU LIKE GEOMETRICS?"
     when 
         QuestionAnswer(question.question == "", answer.option == "A SANS SERIF MAYBE?")
     then 
-        insert(new Question("YOU LIKE GEOMETRICS?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("YOU LIKE GEOMETRICS?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -163,7 +167,7 @@ rule "Question DO YOU LIKE FUTURA?"
     when 
         QuestionAnswer(question.question == "YOU LIKE GEOMETRICS?", answer.option == "YES")
     then 
-        insert(new Question("DO YOU LIKE FUTURA?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("DO YOU LIKE FUTURA?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -171,7 +175,7 @@ rule "Perfect typeface Futura"
     when 
         QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Futura",null,null));
+        insert(new Question("Perfect typeface for you is Futura",null,null,null));
 end  
             
     
@@ -179,7 +183,7 @@ rule "Perfect typeface Metro"
     when 
         QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "NO")
     then 
-        insert(new Question("Perfect typeface for you is Metro",null,null));
+        insert(new Question("Perfect typeface for you is Metro",null,null,null));
 end  
             
     
@@ -187,7 +191,7 @@ rule "Question A NEO-GROTESK PERHAPS?"
     when 
         QuestionAnswer(question.question == "YOU LIKE GEOMETRICS?", answer.option == "NO")
     then 
-        insert(new Question("A NEO-GROTESK PERHAPS?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("A NEO-GROTESK PERHAPS?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -195,7 +199,7 @@ rule "Question SOMETHING HUMANISTIC, THEN?"
     when 
         QuestionAnswer(question.question == "A NEO-GROTESK PERHAPS?", answer.option == "NO")
     then 
-        insert(new Question("SOMETHING HUMANISTIC, THEN?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("SOMETHING HUMANISTIC, THEN?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -203,7 +207,7 @@ rule "Question DO YOU LIKE THE LOOK OF ADOBE?"
     when 
         QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "YES")
     then 
-        insert(new Question("DO YOU LIKE THE LOOK OF ADOBE?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("DO YOU LIKE THE LOOK OF ADOBE?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -211,7 +215,7 @@ rule "Perfect typeface Myridad"
     when 
         QuestionAnswer(question.question == "DO YOU LIKE THE LOOK OF ADOBE?", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Myridad",null,null));
+        insert(new Question("Perfect typeface for you is Myridad",null,null,null));
 end  
             
     
@@ -219,7 +223,7 @@ rule "Perfect typeface Frutiger"
     when 
         QuestionAnswer(question.question == "DO YOU LIKE THE LOOK OF ADOBE?", answer.option == "NO")
     then 
-        insert(new Question("Perfect typeface for you is Frutiger",null,null));
+        insert(new Question("Perfect typeface for you is Frutiger",null,null,null));
 end  
             
     
@@ -227,7 +231,7 @@ rule "Question HOW ABOUT SOMETINH CLASSIC"
     when 
         QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "NO")
     then 
-        insert(new Question("HOW ABOUT SOMETINH CLASSIC",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("HOW ABOUT SOMETINH CLASSIC",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -235,7 +239,7 @@ rule "Perfect typeface Akzidenz Grotesk"
     when 
         QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Akzidenz Grotesk",null,null));
+        insert(new Question("Perfect typeface for you is Akzidenz Grotesk",null,null,null));
 end  
             
     
@@ -243,7 +247,7 @@ rule "Question THEN WE ONLY HAVE SOMETHING DECORATIVE"
     when 
         QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "NO")
     then 
-        insert(new Question("THEN WE ONLY HAVE SOMETHING DECORATIVE",new QuestionOption("OK"),new QuestionOption("")));
+        insert(new Question("THEN WE ONLY HAVE SOMETHING DECORATIVE",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
 end  
 
 
@@ -251,7 +255,7 @@ rule "Perfect typeface Peignot"
     when 
         QuestionAnswer(question.question == "THEN WE ONLY HAVE SOMETHING DECORATIVE", answer.option == "OK")
     then 
-        insert(new Question("Perfect typeface for you is Peignot",null,null));
+        insert(new Question("Perfect typeface for you is Peignot",null,null,null));
 end  
             
     
@@ -259,7 +263,7 @@ rule "Question IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\""
     when 
         QuestionAnswer(question.question == "A NEO-GROTESK PERHAPS?", answer.option == "YES")
     then 
-        insert(new Question("IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"",new QuestionOption("GOOD"),new QuestionOption("BAD")));
+        insert(new Question("IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
 end  
 
 
@@ -267,7 +271,7 @@ rule "Perfect typeface Eurostile"
     when 
         QuestionAnswer(question.question == "IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"", answer.option == "GOOD")
     then 
-        insert(new Question("Perfect typeface for you is Eurostile",null,null));
+        insert(new Question("Perfect typeface for you is Eurostile",null,null,null));
 end  
             
     
@@ -275,7 +279,7 @@ rule "Perfect typeface Helvetica"
     when 
         QuestionAnswer(question.question == "IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"", answer.option == "BAD")
     then 
-        insert(new Question("Perfect typeface for you is Helvetica",null,null));
+        insert(new Question("Perfect typeface for you is Helvetica",null,null,null));
 end  
             
     
@@ -283,7 +287,7 @@ rule "Question HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?"
     when 
         QuestionAnswer(question.question == "", answer.option == "OR PERHAPS A SERIF?")
     then 
-        insert(new Question("HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?",new QuestionOption("GOOD"),new QuestionOption("BAD")));
+        insert(new Question("HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
 end  
 
 
@@ -291,7 +295,7 @@ rule "Perfect typeface Rotis"
     when 
         QuestionAnswer(question.question == "HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?", answer.option == "GOOD")
     then 
-        insert(new Question("Perfect typeface for you is Rotis",null,null));
+        insert(new Question("Perfect typeface for you is Rotis",null,null,null));
 end  
             
     
@@ -299,7 +303,7 @@ rule "Question SOMETHING NEW, GOT SERIFS,GOT SANS?"
     when 
         QuestionAnswer(question.question == "HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?", answer.option == "BAD")
     then 
-        insert(new Question("SOMETHING NEW, GOT SERIFS,GOT SANS?",new QuestionOption("GOOD"),new QuestionOption("BAD")));
+        insert(new Question("SOMETHING NEW, GOT SERIFS,GOT SANS?",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
 end  
 
 
@@ -307,7 +311,7 @@ rule "Perfect typeface Fedra"
     when 
         QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS,GOT SANS?", answer.option == "GOOD")
     then 
-        insert(new Question("Perfect typeface for you is Fedra",null,null));
+        insert(new Question("Perfect typeface for you is Fedra",null,null,null));
 end  
             
     
@@ -315,7 +319,7 @@ rule "Question IS IT AN INTALIAN RESTAURANT?"
     when 
         QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS,GOT SANS?", answer.option == "BAD")
     then 
-        insert(new Question("IS IT AN INTALIAN RESTAURANT?",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("IS IT AN INTALIAN RESTAURANT?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -323,7 +327,7 @@ rule "Perfect typeface Bodoni"
     when 
         QuestionAnswer(question.question == "IS IT AN INTALIAN RESTAURANT?", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Bodoni",null,null));
+        insert(new Question("Perfect typeface for you is Bodoni",null,null,null));
 end  
             
     
@@ -331,7 +335,7 @@ rule "Question GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE"
     when 
         QuestionAnswer(question.question == "IS IT AN INTALIAN RESTAURANT?", answer.option == "NO")
     then 
-        insert(new Question("GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE",new QuestionOption("YES"),new QuestionOption("NO")));
+        insert(new Question("GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
@@ -339,7 +343,7 @@ rule "Perfect typeface Lexicon"
     when 
         QuestionAnswer(question.question == "GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE", answer.option == "YES")
     then 
-        insert(new Question("Perfect typeface for you is Lexicon",null,null));
+        insert(new Question("Perfect typeface for you is Lexicon",null,null,null));
 end  
             
     
@@ -347,7 +351,7 @@ rule "Question HERE WE HAVE A CLASSIC WATING FOR YOU"
     when 
         QuestionAnswer(question.question == "GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE", answer.option == "NO")
     then 
-        insert(new Question("HERE WE HAVE A CLASSIC WATING FOR YOU",new QuestionOption("OK"),new QuestionOption("")));
+        insert(new Question("HERE WE HAVE A CLASSIC WATING FOR YOU",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
 end  
 
 
@@ -355,7 +359,127 @@ rule "Perfect typeface Palatino"
     when 
         QuestionAnswer(question.question == "HERE WE HAVE A CLASSIC WATING FOR YOU", answer.option == "OK")
     then 
-        insert(new Question("Perfect typeface for you is Palatino",null,null));
+        insert(new Question("Perfect typeface for you is Palatino",null,null,null));
+end  
+            
+    
+rule "Question LIKE SOMETHING HANDWRITEN, DO YOU?"
+    when 
+        QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Invitation")
+    then 
+        insert(new Question("LIKE SOMETHING HANDWRITEN, DO YOU?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question SOMETHING CALLIGRAPHIC, MAYBE?"
+    when 
+        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITEN, DO YOU?", answer.option == "YES")
+    then 
+        insert(new Question("SOMETHING CALLIGRAPHIC, MAYBE?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Zapfina"
+    when 
+        QuestionAnswer(question.question == "SOMETHING CALLIGRAPHIC, MAYBE?", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Zapfina",null,null,null));
+end  
+            
+    
+rule "Perfect typeface FF Enknyhthand"
+    when 
+        QuestionAnswer(question.question == "SOMETHING CALLIGRAPHIC, MAYBE?", answer.option == "NO")
+    then 
+        insert(new Question("Perfect typeface for you is FF Enknyhthand",null,null,null));
+end  
+            
+    
+rule "Question HOW ABOUT SOMETHING A BIT FANCY?"
+    when 
+        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITEN, DO YOU?", answer.option == "NO")
+    then 
+        insert(new Question("HOW ABOUT SOMETHING A BIT FANCY?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question THIN HAIRLINES TODO"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING A BIT FANCY?", answer.option == "YES")
+    then 
+        insert(new Question("THIN HAIRLINES TODO",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question THINNER HAIRLINES TODO"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING A BIT FANCY?", answer.option == "YES")
+    then 
+        insert(new Question("THINNER HAIRLINES TODO",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Bodoni z"
+    when 
+        QuestionAnswer(question.question == "THIN HAIRLINES TODO", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Bodoni",null,null,null));
+end  
+            
+    
+rule "Question Readability"
+    when 
+        QuestionAnswer(question.question == "THINNER HAIRLINES TODO", answer.option == "YES")
+    then 
+        insert(new Question("Readability",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Walbaum"
+    when 
+        QuestionAnswer(question.question == "Readability", answer.option == "YES")
+    then 
+        insert(new Question("Perfect typeface for you is Walbaum",null,null,null));
+end  
+            
+    
+rule "Perfect typeface Didot"
+    when 
+        QuestionAnswer(question.question == "Readability", answer.option == "NO")
+    then 
+        insert(new Question("Perfect typeface for you is Didot",null,null,null));
+end  
+            
+    
+rule "Question SOMETHING FUN THEN?"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING A BIT FANCY?", answer.option == "NO")
+    then 
+        insert(new Question("SOMETHING FUN THEN?",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Question ARE YOU ALONE?"
+    when 
+        QuestionAnswer(question.question == "SOMETHING FUN THEN?", answer.option == "OK")
+    then 
+        insert(new Question("ARE YOU ALONE?",new QuestionOption("YES"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Question OKEY THEN, COME WITH ME"
+    when 
+        QuestionAnswer(question.question == "ARE YOU ALONE?", answer.option == "YES")
+    then 
+        insert(new Question("OKEY THEN, COME WITH ME",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Comic Sans"
+    when 
+        QuestionAnswer(question.question == "OKEY THEN, COME WITH ME", answer.option == "OK")
+    then 
+        insert(new Question("Perfect typeface for you is Comic Sans",null,null,null));
 end  
             
     
