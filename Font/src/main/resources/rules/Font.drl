@@ -1,5 +1,6 @@
 package com.font;
  
+import org.kie.api.runtime.KieRuntime;
 import javax.swing.*;
 
 //declaring classes of object used in this project
@@ -19,46 +20,50 @@ declare QuestionAnswer
 	answer : QuestionOption
 end
 
-//declaration of Gui helper functions
+function void askQuestion(Question q, KieRuntime krt) {
+	System.out.println(q.getQuestion());
+		
+	QuestionOption[] o;
+	o = new QuestionOption[3];
+	o[0] = q.getOption1();
+	o[1] = q.getOption2();
+	o[2] = q.getOption3();
+	
+	//Some options may by null
+	int num_options = 2;
+	for(;num_options>=0;num_options--)
+	{
+		if(o[num_options] !=null && o[num_options].getOption() != "")
+			break;
+	}
+	num_options++;
+	if(num_options == 0)
+	{
+		//Special case. Lets create dummy QuestionOption with OK text
+		o[0] = new QuestionOption("OK");
+		num_options = 1;
+	}
+	
+	Object[] string_options = new Object[num_options];
+	for(int i=0;i<num_options;++i)
+		string_options[i] = (Object)o[i].getOption();
+	
+	 JFrame frame = new JFrame("DialogDemo");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
+            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+            null, string_options, string_options[0]);
+    if(n!=-1)
+    	krt.insert( new QuestionAnswer(q,o[n]));
+	else krt.update(krt.getFactHandle(q), q);
+}
+
 rule "Ask question"
+	dialect "java"
 	when 
 		q: Question()
 	then
-		System.out.println(q.getQuestion());
-		
-		QuestionOption[] o;
-		o = new QuestionOption[3];
-		o[0] = q.getOption1();
-		o[1] = q.getOption2();
-		o[2] = q.getOption3();
-		
-		//Some options may by null
-		int num_options = 2;
-		for(;num_options>=0;num_options--)
-		{
-			if(o[num_options] !=null && o[num_options].getOption() != "")
-				break;
-		}
-		num_options++;
-		if(num_options == 0)
-		{
-			//Special case. Lets create dummy QuestionOption with OK text
-			o[0] = new QuestionOption("OK");
-			num_options = 1;
-		}
-		
-		Object[] string_options = new Object[num_options];
-		for(int i=0;i<num_options;++i)
-			string_options[i] = (Object)o[i].getOption();
-		
-		 JFrame frame = new JFrame("DialogDemo");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
-                JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
-                null, string_options, string_options[0]);
-        if(n!=-1)
-        	insert( new QuestionAnswer(q,o[n]));
-		else update(q);
+		askQuestion(q, kcontext.getKieRuntime());
 end
 
 
