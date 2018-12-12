@@ -1,0 +1,492 @@
+package com.font;
+ 
+import org.kie.api.runtime.KieRuntime;
+import javax.swing.*;
+
+//declaring classes of object used in this project
+declare Question
+ 	question : String 
+	option1 : QuestionOption
+	option2 : QuestionOption
+	option3 : QuestionOption
+end
+
+declare QuestionOption
+	option : String
+end
+
+declare QuestionAnswer
+	question : Question
+	answer : QuestionOption
+end
+
+declare PerfectTypeFace
+	name : String
+end
+
+function void askQuestion(Question q, KieRuntime krt) {
+	System.out.println(q.getQuestion());
+		
+	QuestionOption[] o;
+	o = new QuestionOption[3];
+	o[0] = q.getOption1();
+	o[1] = q.getOption2();
+	o[2] = q.getOption3();
+	
+	//Some options may by null
+	int num_options = 2;
+	for(;num_options>=0;num_options--)
+	{
+		if(o[num_options] !=null && o[num_options].getOption() != "")
+			break;
+	}
+	num_options++;
+	if(num_options == 0)
+	{
+		//Special case. Lets create dummy QuestionOption with OK text
+		o[0] = new QuestionOption("OK");
+		num_options = 1;
+	}
+	
+	Object[] string_options = new Object[num_options];
+	for(int i=0;i<num_options;++i)
+		string_options[i] = (Object)o[i].getOption();
+	
+	JFrame frame = new JFrame("Choose one");
+    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    int n = JOptionPane.showOptionDialog(null, q.getQuestion(), "",
+            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+            null, string_options, string_options[0]);
+    if(n!=-1)
+    	krt.insert( new QuestionAnswer(q,o[n]));
+	else krt.update(krt.getFactHandle(q), q);
+}
+
+rule "Ask question"
+	dialect "java"
+	when 
+		q: Question()
+	then
+		askQuestion(q, kcontext.getKieRuntime());
+end
+
+rule "Perfect typeface"
+	dialect "java"
+	when
+		ptf : PerfectTypeFace()
+	then
+		System.out.println(ptf.getName());
+		Object[] string_options= {"OK"};
+		JFrame frame = new JFrame("Congratulation");
+    	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    	int n = JOptionPane.showOptionDialog(null, "<html>Perfect typeface for you is:<br>"+
+    	"<font color=\"green\">"+ptf.getName()+"</font></html>", "",
+            JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE,
+            null, string_options, string_options[0]);
+	
+end
+
+//init statement 
+
+rule "Init"
+	when
+	then
+		insert(new QuestionAnswer(new Question("",null,null,null),new QuestionOption("")));
+end
+
+//decision rules
+
+rule "Question Why you need typeface?"
+    when 
+        QuestionAnswer(question.question == "", answer.option == "")
+    then 
+        insert(new Question("Why you need typeface?",new QuestionOption("Logo"),new QuestionOption("Infographic"),new QuestionOption("Invitation")));
+end  
+
+
+rule "Question We all like something very condensed, YES?"
+    when 
+        QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Infographic")
+    then 
+        insert(new Question("We all like something very condensed, YES?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Univers"
+    when 
+        QuestionAnswer(question.question == "We all like something very condensed, YES?", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Univers"));
+end  
+            
+    
+rule "Question GOT A LOT OF TABLES, HAVE YOU?"
+    when 
+        QuestionAnswer(question.question == "We all like something very condensed, YES?", answer.option == "NO")
+    then 
+        insert(new Question("GOT A LOT OF TABLES, HAVE YOU?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Letter Gothic"
+    when 
+        QuestionAnswer(question.question == "GOT A LOT OF TABLES, HAVE YOU?", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Letter Gothic"));
+end  
+            
+    
+rule "Question YOU CIRED WHEN WATICHING TERMINATOR"
+    when 
+        QuestionAnswer(question.question == "GOT A LOT OF TABLES, HAVE YOU?", answer.option == "NO")
+    then 
+        insert(new Question("YOU CIRED WHEN WATICHING TERMINATOR",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface OCR"
+    when 
+        QuestionAnswer(question.question == "YOU CIRED WHEN WATICHING TERMINATOR", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("OCR"));
+end  
+            
+    
+rule "Question I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT"
+    when 
+        QuestionAnswer(question.question == "YOU CIRED WHEN WATICHING TERMINATOR", answer.option == "NO")
+    then 
+        insert(new Question("I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT",new QuestionOption("YES"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface FF DIN"
+    when 
+        QuestionAnswer(question.question == "I MUST SAY TKAT THIS FLOWCHART IS LOOKING HOT", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("FF DIN"));
+end  
+            
+    
+rule "Question "
+    when 
+        QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Logo")
+    then 
+        insert(new Question("",new QuestionOption("A SANS SERIF MAYBE?"),new QuestionOption("OR PERHAPS A SERIF?"),new QuestionOption("")));
+end  
+
+
+rule "Question YOU LIKE GEOMETRICS?"
+    when 
+        QuestionAnswer(question.question == "", answer.option == "A SANS SERIF MAYBE?")
+    then 
+        insert(new Question("YOU LIKE GEOMETRICS?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question DO YOU LIKE FUTURA?"
+    when 
+        QuestionAnswer(question.question == "YOU LIKE GEOMETRICS?", answer.option == "YES")
+    then 
+        insert(new Question("DO YOU LIKE FUTURA?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Futura"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Futura"));
+end  
+            
+    
+rule "Perfect typeface Metro"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE FUTURA?", answer.option == "NO")
+    then 
+        insert(new PerfectTypeFace("Metro"));
+end  
+            
+    
+rule "Question A NEO-GROTESK PERHAPS?"
+    when 
+        QuestionAnswer(question.question == "YOU LIKE GEOMETRICS?", answer.option == "NO")
+    then 
+        insert(new Question("A NEO-GROTESK PERHAPS?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question SOMETHING HUMANISTIC, THEN?"
+    when 
+        QuestionAnswer(question.question == "A NEO-GROTESK PERHAPS?", answer.option == "NO")
+    then 
+        insert(new Question("SOMETHING HUMANISTIC, THEN?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question DO YOU LIKE THE LOOK OF ADOBE?"
+    when 
+        QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "YES")
+    then 
+        insert(new Question("DO YOU LIKE THE LOOK OF ADOBE?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Myridad"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE THE LOOK OF ADOBE?", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Myridad"));
+end  
+            
+    
+rule "Perfect typeface Frutiger"
+    when 
+        QuestionAnswer(question.question == "DO YOU LIKE THE LOOK OF ADOBE?", answer.option == "NO")
+    then 
+        insert(new PerfectTypeFace("Frutiger"));
+end  
+            
+    
+rule "Question HOW ABOUT SOMETINH CLASSIC"
+    when 
+        QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "NO")
+    then 
+        insert(new Question("HOW ABOUT SOMETINH CLASSIC",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Akzidenz Grotesk"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Akzidenz Grotesk"));
+end  
+            
+    
+rule "Question THEN WE ONLY HAVE SOMETHING DECORATIVE"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "NO")
+    then 
+        insert(new Question("THEN WE ONLY HAVE SOMETHING DECORATIVE",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Peignot"
+    when 
+        QuestionAnswer(question.question == "THEN WE ONLY HAVE SOMETHING DECORATIVE", answer.option == "OK")
+    then 
+        insert(new PerfectTypeFace("Peignot"));
+end  
+            
+    
+rule "Question IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\""
+    when 
+        QuestionAnswer(question.question == "A NEO-GROTESK PERHAPS?", answer.option == "YES")
+    then 
+        insert(new Question("IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Eurostile"
+    when 
+        QuestionAnswer(question.question == "IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"", answer.option == "GOOD")
+    then 
+        insert(new PerfectTypeFace("Eurostile"));
+end  
+            
+    
+rule "Perfect typeface Helvetica"
+    when 
+        QuestionAnswer(question.question == "IF I SAY \"SCIENCE FICTION MOVIES ARE MY FAVOURITE\"", answer.option == "BAD")
+    then 
+        insert(new PerfectTypeFace("Helvetica"));
+end  
+            
+    
+rule "Question HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?"
+    when 
+        QuestionAnswer(question.question == "", answer.option == "OR PERHAPS A SERIF?")
+    then 
+        insert(new Question("HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Rotis"
+    when 
+        QuestionAnswer(question.question == "HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?", answer.option == "GOOD")
+    then 
+        insert(new PerfectTypeFace("Rotis"));
+end  
+            
+    
+rule "Question SOMETHING NEW, GOT SERIFS,GOT SANS?"
+    when 
+        QuestionAnswer(question.question == "HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?", answer.option == "BAD")
+    then 
+        insert(new Question("SOMETHING NEW, GOT SERIFS,GOT SANS?",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Fedra"
+    when 
+        QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS,GOT SANS?", answer.option == "GOOD")
+    then 
+        insert(new PerfectTypeFace("Fedra"));
+end  
+            
+    
+rule "Question IS IT AN INTALIAN RESTAURANT?"
+    when 
+        QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS,GOT SANS?", answer.option == "BAD")
+    then 
+        insert(new Question("IS IT AN INTALIAN RESTAURANT?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Bodoni"
+    when 
+        QuestionAnswer(question.question == "IS IT AN INTALIAN RESTAURANT?", answer.option == "YES")
+   		or
+   		QuestionAnswer(question.question == "", answer.option == "THIN HAIRLINES")
+    then 
+        insert(new PerfectTypeFace("Bodoni"));
+end  
+            
+    
+rule "Question GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE"
+    when 
+        QuestionAnswer(question.question == "IS IT AN INTALIAN RESTAURANT?", answer.option == "NO")
+    then 
+        insert(new Question("GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Lexicon"
+    when 
+        QuestionAnswer(question.question == "GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Lexicon"));
+end  
+            
+    
+rule "Question HERE WE HAVE A CLASSIC WATING FOR YOU"
+    when 
+        QuestionAnswer(question.question == "GOT A WHOLE BUNCH OF OFFICE CORRESPODENCE", answer.option == "NO")
+    then 
+        insert(new Question("HERE WE HAVE A CLASSIC WATING FOR YOU",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Palatino"
+    when 
+        QuestionAnswer(question.question == "HERE WE HAVE A CLASSIC WATING FOR YOU", answer.option == "OK")
+    then 
+        insert(new PerfectTypeFace("Palatino"));
+end  
+            
+    
+rule "Question LIKE SOMETHING HANDWRITEN, DO YOU?"
+    when 
+        QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Invitation")
+    then 
+        insert(new Question("LIKE SOMETHING HANDWRITEN, DO YOU?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question SOMETHING CALLIGRAPHIC, MAYBE?"
+    when 
+        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITEN, DO YOU?", answer.option == "YES")
+    then 
+        insert(new Question("SOMETHING CALLIGRAPHIC, MAYBE?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Zapfina"
+    when 
+        QuestionAnswer(question.question == "SOMETHING CALLIGRAPHIC, MAYBE?", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Zapfina"));
+end  
+            
+    
+rule "Perfect typeface FF Enknyhthand"
+    when 
+        QuestionAnswer(question.question == "SOMETHING CALLIGRAPHIC, MAYBE?", answer.option == "NO")
+    then 
+        insert(new PerfectTypeFace("FF Enknyhthand"));
+end  
+            
+    
+rule "Question HOW ABOUT SOMETHING A BIT FANCY?"
+    when 
+        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITEN, DO YOU?", answer.option == "NO")
+    then 
+        insert(new Question("HOW ABOUT SOMETHING A BIT FANCY?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Question THIN HAIRLINES OR THINNER HAIRLINES"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING A BIT FANCY?", answer.option == "YES")
+    then 
+        insert(new Question("",new QuestionOption("THIN HAIRLINES"),new QuestionOption("THINNER HAIRLINES"),new QuestionOption("")));
+end  
+
+
+rule "Question Readability"
+    when 
+        QuestionAnswer(question.question == "", answer.option == "THINNER HAIRLINES")
+    then 
+        insert(new Question("Readability",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Walbaum"
+    when 
+        QuestionAnswer(question.question == "Readability", answer.option == "YES")
+    then 
+        insert(new PerfectTypeFace("Walbaum"));
+end  
+            
+    
+rule "Perfect typeface Didot"
+    when 
+        QuestionAnswer(question.question == "Readability", answer.option == "NO")
+    then 
+        insert(new PerfectTypeFace("Didot"));
+end  
+            
+    
+rule "Question SOMETHING FUN THEN?"
+    when 
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING A BIT FANCY?", answer.option == "NO")
+    then 
+        insert(new Question("SOMETHING FUN THEN?",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Question ARE YOU ALONE?"
+    when 
+        QuestionAnswer(question.question == "SOMETHING FUN THEN?", answer.option == "OK")
+    then 
+        insert(new Question("ARE YOU ALONE?",new QuestionOption("YES"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Question OKEY THEN, COME WITH ME"
+    when 
+        QuestionAnswer(question.question == "ARE YOU ALONE?", answer.option == "YES")
+    then 
+        insert(new Question("OKEY THEN, COME WITH ME",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
+end  
+
+
+rule "Perfect typeface Comic Sans"
+    when 
+        QuestionAnswer(question.question == "OKEY THEN, COME WITH ME", answer.option == "OK")
+    then 
+        insert(new PerfectTypeFace("Comic Sans"));
+end  
+            
+    
