@@ -49,13 +49,13 @@ class HelloGui extends JFrame implements ActionListener{
 		"<br>by browsing through the pages of FontBook. The list is (very loosely)"+
 		"<br>based on the top 50 of Die 100 Besten Schriften by Font Shop"+
 		"<br><br><br> Authors of implementation in Drools:"+
-		"<br>Micha≥ Dolata 132208"+
-		"<br>£ukasz Eckert 132218"+
+		"<br>Michal Dolata 132208"+
+		"<br>≈Åukasz Eckert 132218"+
 		"<br>Project for laboratory of Artificial Intelligence<br> on Poznan University of Technology"+
-		"<br>Prowadzπcy: dr inø. Artur Michalski </html>";
+		"<br>Prowadzacy: dr inz. Artur Michalski </html>";
 		JLabel jLabel = new JLabel(label);
 		add(jLabel);
-		newFontJB = new JButton("Find best for you!!!");
+		newFontJB = new JButton("Find best font you!!!");
 		newFontJB.setVerticalAlignment(SwingConstants.BOTTOM);
 		add(newFontJB);
 		newFontJB.addActionListener(this);
