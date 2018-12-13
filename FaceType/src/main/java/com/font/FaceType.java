@@ -13,10 +13,7 @@ import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
-
-
-
-public class DroolsTest {
+public class FaceType {
 
     public static final void main(String[] args) {
         try {
@@ -30,6 +27,7 @@ public class DroolsTest {
         }
     }
 }
+
 class HelloGui extends JFrame implements ActionListener{
 	JButton newFontJB;
 	KieSession kSession;
@@ -39,7 +37,7 @@ class HelloGui extends JFrame implements ActionListener{
 		this.kSession = kSession;
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(450, 300);
+		setSize(500, 300);
 		setLocation(50,50);
 		setLayout(new FlowLayout());
 		setResizable(false);
