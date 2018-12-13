@@ -248,17 +248,17 @@ rule "Perfect typeface Frutiger"
 end  
             
     
-rule "Question HOW ABOUT SOMETINH CLASSIC"
+rule "Question HOW ABOUT SOMETHING CLASSIC?"
     when 
         QuestionAnswer(question.question == "SOMETHING HUMANISTIC, THEN?", answer.option == "NO")
     then 
-        insert(new Question("HOW ABOUT SOMETINH CLASSIC",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+        insert(new Question("HOW ABOUT SOMETHING CLASSIC?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
 rule "Perfect typeface Akzidenz Grotesk"
     when 
-        QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "YES")
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING CLASSIC?", answer.option == "YES")
     then 
         insert(new PerfectTypeFace("Akzidenz Grotesk"));
 end  
@@ -266,7 +266,7 @@ end
     
 rule "Question THEN WE ONLY HAVE SOMETHING DECORATIVE"
     when 
-        QuestionAnswer(question.question == "HOW ABOUT SOMETINH CLASSIC", answer.option == "NO")
+        QuestionAnswer(question.question == "HOW ABOUT SOMETHING CLASSIC?", answer.option == "NO")
     then 
         insert(new Question("THEN WE ONLY HAVE SOMETHING DECORATIVE",new QuestionOption("OK"),new QuestionOption(""),new QuestionOption("")));
 end  
@@ -320,17 +320,17 @@ rule "Perfect typeface Rotis"
 end  
             
     
-rule "Question SOMETHING NEW, GOT SERIFS,GOT SANS?"
+rule "Question SOMETHING NEW, GOT SERIFS, GOT SANS?"
     when 
         QuestionAnswer(question.question == "HOW DO THE WORDS SEMI-SANS SEMI-SERIF SOUND?", answer.option == "BAD")
     then 
-        insert(new Question("SOMETHING NEW, GOT SERIFS,GOT SANS?",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
+        insert(new Question("SOMETHING NEW, GOT SERIFS, GOT SANS?",new QuestionOption("GOOD"),new QuestionOption("BAD"),new QuestionOption("")));
 end  
 
 
 rule "Perfect typeface Fedra"
     when 
-        QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS,GOT SANS?", answer.option == "GOOD")
+        QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS, GOT SANS?", answer.option == "GOOD")
     then 
         insert(new PerfectTypeFace("Fedra"));
 end  
@@ -338,7 +338,7 @@ end
     
 rule "Question IS IT AN INTALIAN RESTAURANT?"
     when 
-        QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS,GOT SANS?", answer.option == "BAD")
+        QuestionAnswer(question.question == "SOMETHING NEW, GOT SERIFS, GOT SANS?", answer.option == "BAD")
     then 
         insert(new Question("IS IT AN INTALIAN RESTAURANT?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
@@ -386,17 +386,17 @@ rule "Perfect typeface Palatino"
 end  
             
     
-rule "Question LIKE SOMETHING HANDWRITEN, DO YOU?"
+rule "Question LIKE SOMETHING HANDWRITTEN, DO YOU?"
     when 
         QuestionAnswer(question.question == "Why you need typeface?", answer.option == "Invitation")
     then 
-        insert(new Question("LIKE SOMETHING HANDWRITEN, DO YOU?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+        insert(new Question("LIKE SOMETHING HANDWRITTEN, DO YOU?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
 rule "Question SOMETHING CALLIGRAPHIC, MAYBE?"
     when 
-        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITEN, DO YOU?", answer.option == "YES")
+        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITTEN, DO YOU?", answer.option == "YES")
     then 
         insert(new Question("SOMETHING CALLIGRAPHIC, MAYBE?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
@@ -420,7 +420,7 @@ end
     
 rule "Question HOW ABOUT SOMETHING A BIT FANCY?"
     when 
-        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITEN, DO YOU?", answer.option == "NO")
+        QuestionAnswer(question.question == "LIKE SOMETHING HANDWRITTEN, DO YOU?", answer.option == "NO")
     then 
         insert(new Question("HOW ABOUT SOMETHING A BIT FANCY?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
@@ -434,17 +434,17 @@ rule "Question THIN HAIRLINES OR THINNER HAIRLINES"
 end  
 
 
-rule "Question Readability"
+rule "Question Readability?"
     when 
         QuestionAnswer(question.question == "", answer.option == "THINNER HAIRLINES")
     then 
-        insert(new Question("Readability",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
+        insert(new Question("Readability?",new QuestionOption("YES"),new QuestionOption("NO"),new QuestionOption("")));
 end  
 
 
 rule "Perfect typeface Walbaum"
     when 
-        QuestionAnswer(question.question == "Readability", answer.option == "YES")
+        QuestionAnswer(question.question == "Readability?", answer.option == "YES")
     then 
         insert(new PerfectTypeFace("Walbaum"));
 end  
@@ -452,7 +452,7 @@ end
     
 rule "Perfect typeface Didot"
     when 
-        QuestionAnswer(question.question == "Readability", answer.option == "NO")
+        QuestionAnswer(question.question == "Readability?", answer.option == "NO")
     then 
         insert(new PerfectTypeFace("Didot"));
 end  
